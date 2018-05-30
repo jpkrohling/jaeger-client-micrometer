@@ -1,0 +1,74 @@
+= Jaeger Client Metrics exposed via Micrometer for Spring Boot 2.x applications
+
+This is a simple starter project for Spring Boot including the Jaeger Client
+exposing its metrics via Micrometer. It also automatically opens an endpoint
+for Prometheus to scrap.
+
+References:
+
+. https://medium.com/jaegertracing/getting-jaegers-java-client-internal-metrics-into-prometheus-85b01afb9baa[Getting Jaeger’s Java Client internal metrics into Prometheus]
+. https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-metrics[Metrics for Spring Boot 2.x applications]
+. https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-metrics-export-prometheus[Metrics for Spring Boot 2.x applications - Prometheus]
+. https://micrometer.io/docs/registry/prometheus[Prometheus registry for Micrometer]
+
+== How to get metrics
+
+Start the application as a regular Spring Boot application, with:
+
+```bash
+$ ./mvnw spring-boot:run
+```
+
+A message like the following should be seen in the logs:
+
+```
+... Mapped "{[/actuator/prometheus],methods=[GET],produces= ...
+```
+
+If that's the case, then Jaeger metrics should be available along with
+the other metrics:
+
+```
+$ curl localhost:8080/actuator/prometheus 2>/dev/null | grep jaeger
+# HELP jaeger:reporter_spans_total
+# TYPE jaeger:reporter_spans_total counter
+jaeger:reporter_spans_total{result="dropped",} 0.0
+jaeger:reporter_spans_total{result="ok",} 0.0
+jaeger:reporter_spans_total{result="err",} 0.0
+# HELP jaeger:finished_spans_total
+# TYPE jaeger:finished_spans_total counter
+jaeger:finished_spans_total 0.0
+# HELP jaeger:sampler_queries_total
+# TYPE jaeger:sampler_queries_total counter
+jaeger:sampler_queries_total{result="ok",} 0.0
+jaeger:sampler_queries_total{result="err",} 0.0
+# HELP jaeger:sampler_updates_total
+# TYPE jaeger:sampler_updates_total counter
+jaeger:sampler_updates_total{result="ok",} 0.0
+jaeger:sampler_updates_total{result="err",} 0.0
+# HELP jaeger:baggage_restrictions_updates_total
+# TYPE jaeger:baggage_restrictions_updates_total counter
+jaeger:baggage_restrictions_updates_total{result="ok",} 0.0
+jaeger:baggage_restrictions_updates_total{result="err",} 0.0
+# HELP jaeger:baggage_truncations_total
+# TYPE jaeger:baggage_truncations_total counter
+jaeger:baggage_truncations_total 0.0
+# HELP jaeger:started_spans_total
+# TYPE jaeger:started_spans_total counter
+jaeger:started_spans_total{sampled="n",} 0.0
+jaeger:started_spans_total{sampled="y",} 0.0
+# HELP jaeger:span_context_decoding_errors_total
+# TYPE jaeger:span_context_decoding_errors_total counter
+jaeger:span_context_decoding_errors_total 0.0
+# HELP jaeger:traces_total
+# TYPE jaeger:traces_total counter
+jaeger:traces_total{sampled="n",state="started",} 0.0
+jaeger:traces_total{sampled="y",state="started",} 0.0
+jaeger:traces_total{sampled="n",state="joined",} 0.0
+jaeger:traces_total{sampled="y",state="joined",} 0.0
+# HELP jaeger:baggage_updates_total
+# TYPE jaeger:baggage_updates_total counter
+jaeger:baggage_updates_total{result="ok",} 0.0
+jaeger:baggage_updates_total{result="err",} 0.0
+```
+
